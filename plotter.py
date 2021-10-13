@@ -1,8 +1,11 @@
+# plotter.py
+# Keep in mind this hangs forever so be sure to stop or pkill the Python instance.
+
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
 from functools import wraps
 
-
+# For use as a decorator
 def plotter(plot: bool = True):
     # Only False if you don't want a plot but have already coded it in
     def decorator(func):
