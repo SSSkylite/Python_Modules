@@ -1,17 +1,17 @@
-# timer.py
+"""Timer module. Quick & Easy."""
 
 import time
 from functools import wraps
 
 
 def timer(func):
+    """Timer decorator."""
     @wraps(func)
     def timed(*args, **kwargs):
-        print("---TIMER--- TIMER START")
-        ts = time.time()
+        print("---TIMER--- \tTIMER START")
+        start = time.time()
         result = func(*args, **kwargs)
-        te = time.time()
-        print("---TIMER--- %2.4f seconds to complete." % (te-ts))
-        #print('func:%r args:[%r, %r] took: %2.4f sec' %(func.__name__, args, kwargs, te-ts))
+        finish = time.time()
+        print("---TIMER--- \t%2.4f seconds to complete." % (finish-start))
         return result
     return timed

@@ -2,13 +2,16 @@
 # classes so this might not work in some weirdly scoped systems.
 
 def debug(locals: dict, var_string: str, num: int = 0) -> None:
-    # Example use: debug(locals(), "[var1,var2]")
-    # Gathers debug data to be passed onto debug_table
-    # Seperate data streams should be designated different nums
+    """Gathers debug data to be passed onto debug_table.
+
+    Seperate data streams should be designated different nums.
+    Example use: debug(locals(), "[var1,var2]")
+    """
     vars = {var.strip(): locals[var.strip()]
             for var in var_string.strip('][').split(',')}
     try:
-        debug.rows[num].append([locals[var] for var in vars])
+        debug.rows[num].append([str(locals[var] if isinstance(
+            locals[var], list) else locals[var]) for var in vars])
 
         debug.lens[num] = [max(len(str(locals[var])), debug.lens[num][i], 6)
                            for i, var in enumerate(vars)]
@@ -26,12 +29,29 @@ def debug(locals: dict, var_string: str, num: int = 0) -> None:
         debug(locals, var_string, num)
 
 
-def debug_table(num: int = 0) -> list:
-    # Tabulates debug data
+def debug_table(num: int = 0, max_col_size: int = 10, min_col_size: int = 6) -> list:
+    """Tabulates debug data."""
     try:
-        formatting = '\t'.join(["{:>%i}" % i for i in debug.lens[num]])
-        print(formatting)
-        sep = ["-"*i for i in debug.lens[num]]
-        return [formatting.format(*i) for i in [debug.header[num], sep, *debug.rows[num]]]
+        col_sizes = [min(max(i, 6), 10) for i in debug.lens[num]]
+        data = []
+        for i, size in enumerate(col_sizes):
+            example = debug.rows[0][0][i]
+            try:
+                _ = float(example)
+                print("Number: " + str(example))
+            except ValueError:
+                print("Not a Number: " + str(example))
+                # data.append("{:>i}" % (size))
+        data.append("{:>%i}" % (size))
+        formatting = '\t'.join(data)
+        sep = ["-"*i for i in col_sizes]
+        table = [formatting.format(*i)
+                 for i in [debug.header[num], sep, *debug.rows[num]]]
+        print(f"---DEBUGGER--- \tTABLE {num} BEGIN")
+        [print(i) for i in table]
+        print(f"---DEBUGGER--- \tTABLE {num} END")
+        return table
+
     except AttributeError:
         print(f"No debug set for num {num}")
+        return False
